@@ -47,7 +47,7 @@ Las preguntas a continuación las pueden responder inline o en otro archivo mark
 1. Explorando el manual Intel *Volumen 3: System Programming. Sección 2.2 Modes of Operation*. ¿A qué nos referimos con modo real y con modo protegido en un procesador Intel? ¿Qué particularidades tiene cada modo?
 
 Modo real:  
-Es el estado en el arrancan todos los procesadores Intel de arquitectura x86 despues de un power-up o reset.  
+Es el estado en el que arrancan todos los procesadores Intel de arquitectura x86 despues de un power-up o reset.  
 Trabaja en 16 bits, podemos direccionar hasta 1MB de memoria, los modos de direccionamiento son limitados y no hay proteccion de memoria ni niveles de privilegio.  
 Ademas provee el ambiente de programacion del procesador Intel 8086 completo, con algunas extensiones (como cambiar a modo protegido o modo de administracion de sistema).  
 Modo protegido:  
