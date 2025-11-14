@@ -47,13 +47,9 @@ Las preguntas a continuación las pueden responder inline o en otro archivo mark
 1. Explorando el manual Intel *Volumen 3: System Programming. Sección 2.2 Modes of Operation*. ¿A qué nos referimos con modo real y con modo protegido en un procesador Intel? ¿Qué particularidades tiene cada modo?
 
 Modo real:  
-Es el estado en el que arrancan todos los procesadores Intel de arquitectura x86 despues de un power-up o reset.  
-Trabaja en 16 bits, podemos direccionar hasta 1MB de memoria, los modos de direccionamiento son limitados y no hay proteccion de memoria ni niveles de privilegio.  
-Ademas provee el ambiente de programacion del procesador Intel 8086 completo, con algunas extensiones (como cambiar a modo protegido o modo de administracion de sistema).  
+Es el estado en el que arrancan todos los procesadores Intel de arquitectura x86 despues de un power-up o reset. Trabaja en 16 bits, podemos direccionar hasta 1MB de memoria, los modos de direccionamiento son limitados y no hay proteccion de memoria ni niveles de privilegio. Ademas provee el ambiente de programacion del procesador Intel 8086 completo, con algunas extensiones (como cambiar a modo protegido o modo de administracion de sistema).  
 Modo protegido:  
-Es el modo de operacion nativo del procesador Intel 80386 en adelante.  
-Tenemos 4GB de memoria direccionables, poseemos 4 niveles de proteccion y nuestro set de instrucciones depende del nivel de privilegio.  
-Provee un set rico en caracteristicas de arquitectura, flexibilidad, alto rendimiento y retro-compatibilidad con software base existente.
+Es el modo de operacion nativo del procesador Intel 80386 en adelante. Tenemos 4GB de memoria direccionables, poseemos 4 niveles de proteccion y nuestro set de instrucciones depende del nivel de privilegio. Provee un set rico en caracteristicas de arquitectura, flexibilidad, alto rendimiento y retro-compatibilidad con software base existente.
 
 2. Comenten en su equipo, ¿Por qué debemos hacer el pasaje de modo real a modo protegido? ¿No podríamos simplemente tener un sistema operativo en modo real? ¿Qué desventajas tendría?
 
@@ -63,33 +59,33 @@ Anteriormente, detallamos que la memoria es un arreglo continuo de bytes y que p
 
 3. Busquen el manual *volumen 3 de Intel en la sección 3.4.5 Segment Descriptors*. ¿Qué es la GDT? ¿Cómo es el formato de un descriptor de segmento, bit a bit? Expliquen brevemente para qué sirven los campos *Limit*, *Base*, *G*, *P*, *DPL*, *S*. También pueden referirse a los slides de la clase teórica, aunque recomendamos que se acostumbren a consultar el manual.
 
-La GDT es una estructura de datos en un espacio de direccion lineal, su base y limite se deben cargar en el registro GDTR. Dicha base debe estar alineada a 8 bytes para lograr el mayor rendimiento posible del procesador, mientras que el limite esta expresado en bytes.
-Al igual que con el acceso a segmentos, el limite se suma a la base para conseguir la direccion del ultimo byte valido (es inclusivo, es decir que un limite igual a cero denota una porcion de exactamente un byte).
-La GDT almacena descriptores de segmento, y debido a que sus tamanios son siempre de 8 bytes, el limite de la GDT siempre sera un numero posible de escribir como 8N-1 (con N siendo la cantidad de descriptores de segmento en la GDT).
-El primer descriptor de segmento en la GDT no es usado por el procesador. Si un selector de segmento refiere a este "descriptor nulo" y se lo carga a un registro de segmento, no genera excepciones, pero si genera una excepcion de proteccion general (#GP) si se intenta acceder a memoria usandolo.
-Un descriptor de segmento esta conformado por dos palabras de 32 bits de esta manera:
-(15:00) - limite(15:00)
-(31:16) - base(15:00)
-(07:00) - base(23:16)
-(11:08) - tipo
-(12) - tipo del descriptor
-(14:13) - nivel de privilegio del descriptor
-(15) - presencia
-(19:16) - limite(19:16)
-(20) - disponibilidad para ser usado por software del sistema
-(21) - segmento de codigo de 64 bits (solo en modo IA-32e)
-(22) - tamanio de operaciones por defecto
-(23) - granularidad
-(31:24) - base(31:24)
-El limite del segmento especifica el tamanio del mismo, el procesador une ambas partes para formar un valor de 20 bits; y lo interpreta en bytes si la granularidad es 0, o en 4KiB si la granularidad es 1.
-La direccion base define la localizacion del byte 0 del segmento dentro del espacio de las 4GiB direcciones lineales de memoria. El procesador une las 3 partes para formar el valor de valor un valor de 32 bits. No es obligatorio pero deberia estar alineada a 16 bytes para permitir a los programas maximizar su rendimiento alineando tanto codigo como datos a dichos 16 bytes.
-El segmento-presente indica si el segmento en cuestion esta presente en memoria, si es 0 el procesador genera una excepcion de segmento-no-presente (#NP) cuando un selector de segmento que refiere a este descriptor de segmento es cargado en un registro de segmento. Software de manejo de memoria puede utilizar este campo para controlar que segmentos estan cargados en memoria fisica en un determinado momento. Junto a la paginacion, ofrece mas control para manejar memoria virtual.
-El nivel de privilegio del descriptor especifica el nivel de privilegio del segmento, va de 0 a 3, siendo 0 el mas privilegiado. Este campo se utiliza para controlar el acceso al segmento.
-Si la S es 0 entonces el segmento descripto es de sistema, y si es 1 es de codigo/datos.
+La GDT es una estructura de datos en un espacio de direccion lineal, su base y limite se deben cargar en el registro GDTR. Dicha base debe estar alineada a 8 bytes para lograr el mayor rendimiento posible del procesador, mientras que el limite esta expresado en bytes.  
+Al igual que con el acceso a segmentos, el limite se suma a la base para conseguir la direccion del ultimo byte valido (es inclusivo, es decir que un limite igual a cero denota una porcion de exactamente un byte).  
+La GDT almacena descriptores de segmento, y debido a que sus tamanios son siempre de 8 bytes, el limite de la GDT siempre sera un numero posible de escribir como 8N-1 (con N siendo la cantidad de descriptores de segmento en la GDT).  
+El primer descriptor de segmento en la GDT no es usado por el procesador. Si un selector de segmento refiere a este "descriptor nulo" y se lo carga a un registro de segmento, no genera excepciones, pero si genera una excepcion de proteccion general (#GP) si se intenta acceder a memoria usandolo.  
+Un descriptor de segmento esta conformado por dos palabras de 32 bits de esta manera:  
+(15:00) - limite(15:00)  
+(31:16) - base(15:00)  
+(07:00) - base(23:16)  
+(11:08) - tipo  
+(12) - tipo del descriptor  
+(14:13) - nivel de privilegio del descriptor  
+(15) - presencia  
+(19:16) - limite(19:16)  
+(20) - disponibilidad para ser usado por software del sistema  
+(21) - segmento de codigo de 64 bits (solo en modo IA-32e)  
+(22) - tamanio de operaciones por defecto  
+(23) - granularidad  
+(31:24) - base(31:24)  
+El limite del segmento especifica el tamanio del mismo, el procesador une ambas partes para formar un valor de 20 bits; y lo interpreta en bytes si la granularidad es 0, o en 4KiB si la granularidad es 1. El limite (sumado a la base) representa el la ultima direccion valida para una estructura, y como estamos en x86, esa direccion estara expresada en bytes.  
+La direccion base define la localizacion del byte 0 del segmento dentro del espacio de las 4GiB direcciones lineales de memoria. El procesador une las 3 partes para formar el valor de valor un valor de 32 bits. No es obligatorio pero deberia estar alineada a 16 bytes para permitir a los programas maximizar su rendimiento alineando tanto codigo como datos a dichos 16 bytes.  
+El segmento-presente indica si el segmento en cuestion esta presente en memoria, si es 0 el procesador genera una excepcion de segmento-no-presente (#NP) cuando un selector de segmento que refiere a este descriptor de segmento es cargado en un registro de segmento. Software de manejo de memoria puede utilizar este campo para controlar que segmentos estan cargados en memoria fisica en un determinado momento. Junto a la paginacion, ofrece mas control para manejar memoria virtual.  
+El nivel de privilegio del descriptor especifica el nivel de privilegio del segmento, va de 0 a 3, siendo 0 el mas privilegiado. Este campo se utiliza para controlar el acceso al segmento.  
+Si la S es 0 entonces el segmento descripto es de sistema, y si es 1 es de codigo/datos.  
 
 4. La tabla de la sección 3.4.5.1 *Code- and Data-Segment Descriptor Types* del volumen 3 del manual del Intel nos permite completar el *Type*, los bits 11, 10, 9, 8. ¿Qué combinación de bits tendríamos que usar si queremos especificar un segmento para ejecución y lectura de código?
 
-(11:08) = 1 0 1 0
+Tendriamos que usar esta combinacion: (11:08) = 1 0 1 0, en conjunto con setear la flag S del descriptor de segmento en cuestion.
 
 ![](img/resolucion-dir-logica.png)
 
@@ -109,11 +105,16 @@ Cada uno de estos segmentos deben direccionar los primeros 817 MiB[^1] de memori
 
 Recuerden que el límite es el último valor accesible dentro del segmento (es inclusivo) y que el límite está relacionado con el nivel de granularidad **G** que hayan seleccionado.
 
+"Procedimiento para calcular un limite en base al tamanio de una porcion de memoria": Tenemos una tira de 817 MiB direccionables, este es el "tamanio" de nuestra memoria. Primero decido si usare granularidad 0 (si el tamanio de la memoria esta en un rango de 1 byte a 1MiB) o 1 (si esta en un rango de 4KiB a 4GiB). En este caso estamos ocurre lo segundo, pues 817 MiB > 1 MiB. Haremos (817 MiB / 4 KiB) pues esa es la "escala" que se usa cuando la granularidad es 1. Luego restaremos 1 byte pues el limite es inclusivo (representa la ultima direccion de memoria valida). Pasando todo a bytes seria: ((817*2^20)/(4*2^10))-1 = 209151.
+
 > Noten que si bien definimos distintos niveles de privilegio, todos usan la misma región de memoria física, por lo cual, no hay una división real de permisos de accesos propuesto a nivel segmentación. Vamos a resolverlo en las próximas clases, cuando agreguemos paginación al kernel.
   
 Ahora, trabajemos con el código provisto por la cátedra. Vamos a completar la tabla de segmentos y cargar los descriptores de segmento. Hemos provisto estructuras en C que permiten simplificar la especificación de los campos de cada descriptor.
 
 6. En el archivo `gdt.h` observen las estructuras: `struct gdt_descriptor_t` y el `struct gdt_entry_t`. ¿Qué creen que contiene la variable `extern gdt_entry_t gdt;` y `extern gdt_descriptor_t GDT_DESC;`?
+
+La variable "gdt" es de tipo "arreglo de gdt_entry_t", cada uno de sus elementos tiene 13 atributos, que corresponden al formato de un descriptor de segmento. Esta variable equivale a la GDT y a sus descriptores de segmento.  
+La variable "GDT_DESC" es de tipo "gdt_descriptor_t", tiene 2 atributos "gdt_length" y "gdt_addr". Esta variable equivale a la GDTR (registro donde se encuentra la base y el limite de la GDT).
 
 7. Buscar en el Volumen 3 del manual de Intel, sección 3.4.2 *Segment Selectors* el formato de los selectores de segmento. Observar en el archivo `defines.h` las constantes con los valores de distintos selectores de segmento posibles. Completen los defines faltantes en `defines.h` y entiendan la utilidad de las macros allí definidas. 
    **USAR LAS MACROS** para definir los campos de los entries de la gdt. En lo posible, no hardcodeen los números directamente en los campos.
